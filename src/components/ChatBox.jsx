@@ -10,14 +10,7 @@ const ChatBox = ({ setfetchAgain, fetchAgain }) => {
         selectedChat ? "block" : "hidden"
       } md:block`}
     >
-      {!selectedChat && (
-        <p className="flex min-h-full items-center justify-center text-3xl text-gray-400">
-          Click on a user to start Chatting
-        </p>
-      )}
-      {selectedChat && (
-        <SingleChat fetchAgain={fetchAgain} setfetchAgain={setfetchAgain} />
-      )}
+      <SingleChat fetchAgain={fetchAgain} setfetchAgain={setfetchAgain} />
     </div>
   );
 };

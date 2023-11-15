@@ -9,6 +9,9 @@ import GroupModal from "./GroupModal";
 const MyChats = ({ fetchAgain }) => {
   const { selectedChat, setSelectedChat, chats, setChats, getChats, user } =
     useContext(Usercontext);
+    useEffect(()=>{
+
+    },[])
   useEffect(() => {
     const token = localStorage.getItem("token");
     getChats(token);
@@ -43,16 +46,19 @@ const MyChats = ({ fetchAgain }) => {
                   ? el.user[1].name
                   : el.user[0].name}
               </p>
-              <div>
-                <p>
-                  <span className="font-semibold">
-                    {el?.latestMessage?.sender}fdsf:{" "}
-                  </span>
-                  {el?.latestMessage?.content}
-                  fsdf
-                </p>
-              </div>
-              {el.latestMessage && <div></div>}
+              {el.latestMessage && (
+                <div>
+                  <p>
+                    <span className="font-semibold">
+                      {el.latestMessage.sender._id === user._id
+                        ? "You"
+                        : el.latestMessage.sender.name}
+                      :
+                    </span>
+                    {el.latestMessage.content}
+                  </p>
+                </div>
+              )}
             </div>
           </>
         ))}

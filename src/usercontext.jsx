@@ -7,7 +7,7 @@ export const UserProvider = ({ children }) => {
   const [user, setuser] = useState(null);
   const [selectedChat, setSelectedChat] = useState(null);
   const [chats, setChats] = useState([]);
-
+  const [notifications, setnotifications] = useState([]);
   function getuser(token) {
     fetch(url + "/user", {
       headers: {
@@ -55,6 +55,8 @@ export const UserProvider = ({ children }) => {
         chats,
         setSelectedChat,
         getChats,
+        notifications,
+        setnotifications
       }}
     >
       {children}
