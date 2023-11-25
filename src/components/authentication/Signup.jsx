@@ -7,11 +7,12 @@ import {
   InputRightAddon,
   useToast,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { url } from "../../../url";
 import { useNavigate } from "react-router-dom";
+import { Usercontext } from "../../usercontext";
 
-const Signup = () => {
+const Signup = ({ edit }) => {
   const [name, setname] = useState(undefined);
   const [email, setemail] = useState(undefined);
   const [password, setpassword] = useState(undefined);
@@ -23,26 +24,26 @@ const Signup = () => {
   const navigate = useNavigate();
 
   const [confirmpassword, setconfirmpassword] = useState("");
+  const { user, setuser } = useContext(Usercontext);
+  useEffect(() => {
+    if (!edit) return;
+    setname(user.name);
+    setpic(user.pic);
+    setemail(user.email);
+  }, []);
   function submithandler() {
-    if (pic === undefined) {
-      toast({
-        title: "Please upload an image for your profile",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      return;
+    if (!name || !email) {
+      if (!edit && !password) {
+        toast({
+          title: "Fill all details",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        return;
+      }
     }
-    if (!name || !email || !password) {
-      toast({
-        title: "Fill all details",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      return;
-    }
-    if (password != confirmpassword) {
+    if (!edit && password != confirmpassword) {
       toast({
         title: "Passwords do not match",
         status: "error",
@@ -51,14 +52,16 @@ const Signup = () => {
       });
       return;
     }
+    const id = edit ? user._id : null;
     const data = {
       name,
       email,
       password,
       pic,
+      id,
     };
-    fetch(url + "/user/signup", {
-      method: "POST",
+    fetch(url + "/user/", {
+      method: edit ? "PUT" : "POST",
       body: JSON.stringify(data),
       headers: {
         "Content-Type": "application/json",
@@ -67,7 +70,7 @@ const Signup = () => {
       .then((res) => {
         if (res.status === 400) {
           toast({
-            title: "User already exsist",
+            title: "User already exsist with this email",
             status: "error",
             duration: 9000,
             isClosable: true,
@@ -78,13 +81,15 @@ const Signup = () => {
       })
       .then((data) => {
         toast({
-          title: "Successfully signed up",
+          title: edit ? "Profile Edited" : "Successfully signed up",
           status: "success",
           duration: 9000,
           isClosable: true,
         });
-        localStorage.setItem("token", data.token);
-        console.log(data);
+        {
+          !edit ? localStorage.setItem("token", data.token) : "";
+        }
+        setuser(data);
         navigate("/chats");
       })
       .catch((err) => console.log(err));
@@ -146,40 +151,45 @@ const Signup = () => {
           onChange={(e) => setemail(e.target.value)}
         />
       </FormControl>
-      <FormControl isRequired id="password">
-        <FormLabel>Password</FormLabel>
-        <InputGroup>
-          <Input
-            value={password}
-            type={show ? "text" : "password"}
-            placeholder="Enter your password"
-            onChange={(e) => setpassword(e.target.value)}
-          />
-          <InputRightAddon>
-            <Button size="sm" onClick={() => setshow((prev) => !prev)}>
-              {" "}
-              {show ? "Hide" : "Show"}
-            </Button>
-          </InputRightAddon>
-        </InputGroup>
-      </FormControl>
-      <FormControl isRequired id="confirmpassword">
-        <FormLabel>Confirm Password</FormLabel>
-        <InputGroup>
-          <Input
-            value={confirmpassword}
-            type={confirm ? "text" : "password"}
-            placeholder="Enter your password"
-            onChange={(e) => setconfirmpassword(e.target.value)}
-          />
-          <InputRightAddon>
-            <Button size="sm" onClick={() => setconfirm((prev) => !prev)}>
-              {" "}
-              {confirm ? "Hide" : "Show"}
-            </Button>
-          </InputRightAddon>
-        </InputGroup>
-      </FormControl>
+      {!edit && (
+        <>
+          {" "}
+          <FormControl isRequired id="password">
+            <FormLabel>Password</FormLabel>
+            <InputGroup>
+              <Input
+                value={password}
+                type={show ? "text" : "password"}
+                placeholder="Enter your password"
+                onChange={(e) => setpassword(e.target.value)}
+              />
+              <InputRightAddon>
+                <Button size="sm" onClick={() => setshow((prev) => !prev)}>
+                  {" "}
+                  {show ? "Hide" : "Show"}
+                </Button>
+              </InputRightAddon>
+            </InputGroup>
+          </FormControl>
+          <FormControl isRequired id="confirmpassword">
+            <FormLabel>Confirm Password</FormLabel>
+            <InputGroup>
+              <Input
+                value={confirmpassword}
+                type={confirm ? "text" : "password"}
+                placeholder="Enter your password"
+                onChange={(e) => setconfirmpassword(e.target.value)}
+              />
+              <InputRightAddon>
+                <Button size="sm" onClick={() => setconfirm((prev) => !prev)}>
+                  {" "}
+                  {confirm ? "Hide" : "Show"}
+                </Button>
+              </InputRightAddon>
+            </InputGroup>
+          </FormControl>
+        </>
+      )}
       <FormControl id="pic">
         <FormLabel> Upload your picture</FormLabel>
         <InputGroup>
@@ -195,7 +205,7 @@ const Signup = () => {
         </InputGroup>
       </FormControl>
       <Button colorScheme="blue" onClick={submithandler} isLoading={loading}>
-        Sign Up
+        {edit ? "Save" : "Sign Up"}
       </Button>
     </div>
   );

@@ -25,7 +25,7 @@ const Profile = () => {
         <Avatar src={user?.pic} size="sm" cursor="pointer" />
       </MenuButton>
       <MenuList>
-        <MyModal user={user}>
+        <MyModal user={user} edit={true}>
           <MenuItem>My Profile</MenuItem>
         </MyModal>
         <MenuItem onClick={logouthandler}>Logout</MenuItem>

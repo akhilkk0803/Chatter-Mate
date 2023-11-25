@@ -9,13 +9,12 @@ import GroupModal from "./GroupModal";
 const MyChats = ({ fetchAgain }) => {
   const { selectedChat, setSelectedChat, chats, setChats, getChats, user } =
     useContext(Usercontext);
-    useEffect(()=>{
-
-    },[])
   useEffect(() => {
     const token = localStorage.getItem("token");
     getChats(token);
+
   }, [fetchAgain]);
+  console.log(chats)
   return (
     <div
       className={` bg-white p-8 md:block  rounded-xl min-h-[82vh] max-h-[82vh] overflow-hidden  'sm:' ${

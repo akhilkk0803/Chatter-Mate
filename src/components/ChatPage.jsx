@@ -21,11 +21,11 @@ const ChatPage = () => {
     }
   }, []);
   return (
-    <div className="w-full flex flex-col gap-5 ">
-      <div className="flex bg-white p-4 justify-between">
+    <div >
+      <div className="flex bg-white mb-10 p-4 justify-between overflow-x-clip">
         {user && <SearchBar />}
-        <p className="text-2xl font-semibold"> Chatter-Mate</p>
-        <div className="flex gap-5 items-center">
+        <p className="text-2xl font-semibold hidden md:block"> Chatter-Mate</p>
+        <div className="flex gap-10 items-center">
           <div>
             <Notification />
           </div>

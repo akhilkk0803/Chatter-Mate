@@ -8,7 +8,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Drawer,
   DrawerBody,
@@ -30,7 +30,19 @@ const SearchBar = () => {
   const [loading, setloading] = useState(false);
   const [loadingChat, setloadingChat] = useState(false);
   const { setSelectedChat, setChats, chats } = useContext(Usercontext);
-
+useEffect(()=>{
+  fetch(url + "/user/?all=true",{
+    headers: {
+      Authorization: "Bearer " + localStorage.getItem("token"),
+    },
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      setloading(false);
+      console.log(res);
+      setData(res);
+    });
+},[])
   function getuser() {
     if (search.trim().length === 0) {
       return toast({

@@ -4,6 +4,7 @@ import { ArrowBackIcon, ViewIcon } from "@chakra-ui/icons";
 import MyModal from "./MyModal";
 import {
   Avatar,
+  Button,
   FormControl,
   Input,
   InputGroup,
@@ -35,6 +36,7 @@ const SingleChat = ({ setfetchAgain, fetchAgain }) => {
   const [currMsgUser, setcurrMsgUser] = useState(null);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [sendLoading, setsendLoading] = useState(false);
   useEffect(() => {
     socket.emit("setup", user);
     socket.on("connected", () => setsocketConnected(true));
@@ -116,9 +118,10 @@ const SingleChat = ({ setfetchAgain, fetchAgain }) => {
     console.log(e);
     if ((e.key === "Enter" && newMessages) || e.type === "click") {
       socket.emit("stop typing", selectedChat._id);
-      if (!newMessages) {
+      if (newMessages.trim().length == 0) {
         return;
       }
+      setsendLoading(true);
       fetch(url + "/message/", {
         method: "POST",
         body: JSON.stringify({
@@ -132,11 +135,12 @@ const SingleChat = ({ setfetchAgain, fetchAgain }) => {
       })
         .then((res) => res.json())
         .then((data) => {
+          setsendLoading(false);
           setnewMessage("");
           socket.emit("new message", data);
           setmessages([data, ...messages]);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => sendLoading(false));
     }
   }
   if (!selectedChat) {
@@ -188,24 +192,20 @@ const SingleChat = ({ setfetchAgain, fetchAgain }) => {
             <Spinner size="xl" />
           </div>
         )}
-        {!loading && (
-          <>
-            <div className="h-[90%] overflow-auto flex flex-col-reverse  gap-2 w-full">
-              {messages.map((el, i) => (
-                <SingleMessage el={el} same={isSameSender(i, el)} />
-              ))}
-            </div>
-          </>
-        )}
 
+        <div className="h-[85%] overflow-auto flex flex-col-reverse  gap-2 w-full">
+          {messages.map((el, i) => (
+            <SingleMessage el={el} same={isSameSender(i, el)} />
+          ))}
+        </div>
+        <div className="h-[5%]">
+          {isTyping && (
+            <div className="text-white  bg-slate-300 w-fit px-4  rounded-full text-xl">
+              ...
+            </div>
+          )}
+        </div>
         <FormControl onKeyDown={sendMessage} isRequired mt={3}>
-          <div>
-            {isTyping && (
-              <div className="text-white bg-slate-300 w-fit px-4  rounded-full text-3xl">
-                ...
-              </div>
-            )}
-          </div>
           <InputGroup>
             <Input
               type="text"
@@ -218,7 +218,11 @@ const SingleChat = ({ setfetchAgain, fetchAgain }) => {
               onChange={typinghandler}
             />
             <InputRightElement>
-              <AiOutlineSend size={25} cursor="pointer" onClick={sendMessage} />
+              <Button
+                isLoading={sendLoading}
+                rightIcon={<AiOutlineSend size={25} cursor="pointer" />}
+                onClick={sendMessage}
+              ></Button>
             </InputRightElement>
           </InputGroup>
         </FormControl>

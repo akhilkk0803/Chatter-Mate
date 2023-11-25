@@ -7,10 +7,7 @@ const Notification = () => {
   const { notifications, user, setSelectedChat, setnotifications } =
     useContext(Usercontext);
   return (
-    <div
-      className="cursor-pointer relative flex "
-      onClick={(prev) => setShowNotification(!prev)}
-    >
+    <div className="cursor-pointer relative flex ">
       <>
         <Menu>
           <MenuButton
@@ -18,8 +15,15 @@ const Notification = () => {
             p={1}
             rightIcon={<BellIcon fontSize="2xl" />}
           />
-          <MenuList>
-            {notifications.length === 0 && "No new messages"}
+          {notifications.length > 0 && (
+            <span className="bg-red-600 absolute -right-2 -top-2 px-2 rounded-full">
+              {notifications.length}
+            </span>
+          )}{" "}
+          <MenuList zIndex={1}>
+            {notifications.length === 0 && (
+              <p className=" bg-white text-green-600 z-100">No new messages</p>
+            )}
             {notifications.length > 0 &&
               notifications.map((el) => (
                 <MenuItem
@@ -31,12 +35,14 @@ const Notification = () => {
                     );
                   }}
                 >
-                  {el.chat.isGroupChat
-                    ? "New Message in " + el.chat.chatName
-                    : "New message from " +
-                      el.chat.user[
-                        el.chat.user.findIndex((el) => el._id != user._id)
-                      ].name}
+                  <p className="text-red-500">
+                    {el.chat.isGroupChat
+                      ? "New Message in " + el.chat.chatName
+                      : "New message from " +
+                        el.chat.user[
+                          el.chat.user.findIndex((el) => el._id != user._id)
+                        ].name}
+                  </p>
                 </MenuItem>
               ))}
           </MenuList>

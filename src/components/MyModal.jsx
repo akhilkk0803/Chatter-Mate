@@ -10,7 +10,8 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { Usercontext } from "../usercontext";
-const MyModal = ({ children, user }) => {
+import { NavLink } from "react-router-dom";
+const MyModal = ({ children, user, edit }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <div>
@@ -40,7 +41,16 @@ const MyModal = ({ children, user }) => {
             />
             <p className="text-2xl">Email: {user?.email} </p>
           </ModalBody>
-          <Button onClick={onClose}>Close</Button>
+          {edit && (
+            <Button mb={2} colorScheme="red">
+              <NavLink className="w-full" to="/edit">
+                Edit
+              </NavLink>
+            </Button>
+          )}{" "}
+          <Button onClick={onClose} colorScheme="blue">
+            Close
+          </Button>
         </ModalContent>
       </Modal>
     </div>
